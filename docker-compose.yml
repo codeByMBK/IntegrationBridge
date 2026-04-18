@@ -1,0 +1,37 @@
+services:
+
+  downstream-api:
+    build: ./downstream-api
+    container_name: downstream-api
+    ports:
+      - "8001:8001"
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  integration-bridge:
+    build: ./integration-bridge
+    container_name: integration-bridge
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./file_drop:/app/file_drop
+    depends_on:
+      downstream-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  legacy-service:
+    build: ./legacy-service
+    container_name: legacy-service
+    depends_on:
+      integration-bridge:
+        condition: service_healthy
