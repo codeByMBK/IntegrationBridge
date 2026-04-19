@@ -121,7 +121,7 @@ No local Python installation required — all services run in containers.
 ## Quick Start
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/codeByMBK/IntegrationBridge.git
 cd IntegrationBridge
 chmod +x setup.sh teardown.sh tests/run_tests.sh
 ./setup.sh
